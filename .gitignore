@@ -4,6 +4,7 @@
 
 # Xcode
 #
+android/app/google-services.json
 build/
 *.pbxuser
 !default.pbxuser

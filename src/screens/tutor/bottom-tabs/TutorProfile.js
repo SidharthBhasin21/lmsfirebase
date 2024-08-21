@@ -27,7 +27,7 @@ const TutorProfile = () => {
     if(user == null) return <ActivityIndicator size="large" color="#0000ff" />
     return (
         <View style = {styles.container}>
-            <Image source={{uri: user.photo}} style={styles.userImg}/>
+            {user.photo && <Image source={{uri: user.photo}} style={styles.userImg}/>}
             <Text style={styles.name}>{user.name}</Text>
         </View>
     )
