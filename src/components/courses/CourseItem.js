@@ -4,6 +4,7 @@ import { moderateScale, verticalScale } from 'react-native-size-matters'
 import { TEXT_COLOR } from '../../utils/colors'
 
 const CourseItem = ({item,index,length}) => {
+    // console.log(item);
     return (
         <View style={{
             width: '90%',
@@ -16,7 +17,7 @@ const CourseItem = ({item,index,length}) => {
             marginBottom: index == length - 1 ? verticalScale(100) : verticalScale(5)
             
         }}>
-            <Image source={require('../../images/course.jpg')} style={{
+            <Image source={{uri: item._data.banner}} style={{
                 width: '100%',
                 height: '60%',
                 resizeMode: 'cover',
@@ -27,7 +28,7 @@ const CourseItem = ({item,index,length}) => {
                 fontWeight: 'bold',
                 marginTop: verticalScale(10),
                 marginHorizontal: verticalScale(10)
-            }}>React Native full zero to hero</Text>
+            }}>{item._data.title}</Text>
 
             <Text style={{
                 color:TEXT_COLOR,
@@ -36,7 +37,15 @@ const CourseItem = ({item,index,length}) => {
                 marginTop: verticalScale(5),
                 marginHorizontal: verticalScale(10),
                 opacity: 0.8
-            }}>This course will teach you react natice from basic to advanced </Text>
+            }}>{item._data.description} </Text>
+            <Text style={{
+                color:'green',
+                fontSize: moderateScale(14),
+                fontWeight: '500',
+                marginTop: verticalScale(5),
+                marginHorizontal: verticalScale(10),
+                opacity: 0.8
+            }}>Price: ₹{item._data.price} </Text>
         </View>
     )
 }

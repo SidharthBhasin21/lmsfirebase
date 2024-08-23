@@ -4,18 +4,75 @@ import { BG_COLOR, THEME_COLOR } from '../../../utils/colors'
 import { moderateScale, moderateVerticalScale, scale, verticalScale } from 'react-native-size-matters'
 import CustomInput from '../../../components/CustomInput'
 import BgButton from '../../../components/BgButton'
+import { launchImageLibrary } from 'react-native-image-picker';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
+import Loader from '../../../components/Loader'
+
+
 
 const AddNewCourses = () => {
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('')
     const [price, setPrice] = useState('')
     const [active, setActive] = useState(true)
+    const [bannerImage, setBannerImage] = useState('')
+    const [loading, setLoading] = useState(false)
+    const navigation = useNavigation()
+
+    const addBanner = async () => {
+        const result = await launchImageLibrary({ mediaType: 'photo',quality: 0.5 });
+
+        console.log(result);
+        if (!result.didCancel) {
+            setBannerImage(result)
+        }
+
+    }
+
+    const uploadCourse = async () => {
+        setLoading(true)
+        const userName = await AsyncStorage.getItem('NAME');
+        const userImage = await AsyncStorage.getItem('EMAIL');
+        const userId = await AsyncStorage.getItem('USERID');
+
+        const reference = storage().ref(bannerImage.assets[0].fileName);
+        const pathToFile = bannerImage.assets[0].uri;
+        // uploads file
+        await reference.putFile(pathToFile);
+        const url = await storage().ref(bannerImage.assets[0].fileName).getDownloadURL();
+        await firestore().collection('courses').add({
+            title,
+            description : desc,
+            price,
+            active,
+            banner: url,
+            userName,
+            userImage,
+            userId,
+        })
+        setLoading(false)
+        navigation.goBack()
+    }
 
     return (
         <ScrollView style={styles.container}>
-            <TouchableOpacity style={styles.banner} >
-                <Image source={require('../../../images/icons/plus.png')} style={styles.addImg} />
-                <Text style={styles.addText}> Add Course Banner</Text>
+            <TouchableOpacity style={styles.banner} onPress={() => addBanner()} >
+
+                {
+                    bannerImage
+                        ?
+                        <Image source={{ uri: bannerImage.assets[0].uri }} style={{ width: '100%', height: '100%', borderRadius: moderateScale(20) }} />
+                        :
+                        <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                            <Image source={require('../../../images/icons/plus.png')} style={styles.addImg} />
+                            <Text style={styles.addText}> Add Course Banner</Text>
+                        </View>
+
+                }
+
             </TouchableOpacity>
 
             <CustomInput
@@ -53,8 +110,9 @@ const AddNewCourses = () => {
                 />
             </View>
             <View style={styles.gap}>
-                <BgButton title={'Upload Course'} color={'white'} />
+                <BgButton title={'Upload Course'} color={'white'} onClick={()=> uploadCourse()}/>
             </View>
+            <Loader visible={loading} />
 
         </ScrollView>
     )

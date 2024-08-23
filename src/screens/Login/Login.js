@@ -9,19 +9,23 @@ import {
 } from '@react-native-google-signin/google-signin';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import auth from '@react-native-firebase/auth';
+
+
 const Login = () => {
 
     const route = useRoute()
     const navigation = useNavigation()
 
     console.log("Login screen")
+
     const _signIn = async () => {
         try {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
             storeData(userInfo)
         } catch (error) {
-            console.log({...error})
+            console.log({ ...error })
             if (error) {
                 switch (error.code) {
                     case statusCodes.SIGN_IN_CANCELLED:
@@ -40,15 +44,10 @@ const Login = () => {
                 // an error that's not related to google sign in occurred
             }
         }
-    }; 
+    };
 
-    
-    
-    useEffect(()=>{
-        GoogleSignin.configure()
-    },[])
 
-    const storeData = async (data) =>{
+    const storeData = async (data) => {
         const collection = route.params.screen == 'tutor' ? 'tutors' : 'learners'
         await firestore().collection(collection).doc(data.user.id).set(data)
         await AsyncStorage.setItem('NAME', data.user.name)
@@ -58,7 +57,44 @@ const Login = () => {
         if (route.params.screen == 'tutor') {
             navigation.navigate("TutorHome")
         }
-    } 
+    }
+    
+    // const storeDataAuth = async (data) => {
+    //     console.log(data);
+        
+    //     const collection = route.params.screen == 'tutor' ? 'tutors' : 'learners'
+    //     await firestore().collection(collection).doc(data.uid).set(JSON.parse(JSON.stringify(data)))
+    //     await AsyncStorage.setItem('NAME', data.displayName)
+    //     await AsyncStorage.setItem('EMAIL', data.email)
+    //     await AsyncStorage.setItem('PHOTO', data.photoURL)
+    //     await AsyncStorage.setItem('USERID', data.uid)
+    //     if (route.params.screen == 'tutor') {
+    //         navigation.navigate("TutorHome")
+    //     }
+    // }
+
+    const onGoogleButtonPress = async () => {
+        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+        // Get the users ID token
+        const { idToken } = await GoogleSignin.signIn();
+
+        // Create a Google credential with the token
+        const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+        const userInfo = await auth().signInWithCredential(googleCredential)
+        console.log(userInfo.user);
+        
+        storeDataAuth(userInfo.user)
+        // Sign-in the user with the credential
+        return userInfo;
+
+    }
+
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            webClientId: '303212196830-pm9i6foodtee90fsd5md0npog3391rvm.apps.googleusercontent.com',
+        })
+    }, [])
 
 
     return (
@@ -67,7 +103,6 @@ const Login = () => {
             <Image source={require('../../images/login.png')} style={styles.banner} />
             <Text style={styles.heading}>Welcome user,</Text>
             <TouchableOpacity style={styles.loginBtn} onPress={() => {
-                
                 _signIn()
             }}>
                 <Image source={require('../../images/google.png')} style={styles.google} />

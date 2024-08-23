@@ -1,18 +1,34 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { BG_COLOR, THEME_COLOR } from '../../../utils/colors'
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters'
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import CourseItem from '../../../components/courses/CourseItem'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import firestore from '@react-native-firebase/firestore';
 
 const LiveCourses = () => {
     const navigation = useNavigation()
+    const isFocused = useIsFocused()
+    const [courses, setCourses] = useState([])
+
+    useEffect(()=>{ 
+        getCourses()
+    },[isFocused])
+
+    const getCourses = async () => {
+        const userId = await AsyncStorage.getItem('USERID')
+        const data = await firestore().collection('courses').where('userId', '==', userId).get()
+        // console.log(data.docs[0].id);
+        
+        setCourses(data.docs)
+    }
 
     return (
         <View style={styles.container}>
             <FlatList
-                data={[1, 2, 3, 4, 5]}
-                keyExtractor={(item) => item.toString()}
+                data={courses}
+                keyExtractor={(item) => item.id}
                 renderItem={({ item , index }) => (
                     <CourseItem item={item} index={index} length={5} />
                 )}
