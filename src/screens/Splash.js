@@ -1,6 +1,6 @@
 import { Image, StatusBar, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
-import {  TEXT_COLOR, THEME_COLOR } from '../utils/colors'
+import {THEME_COLOR } from '../utils/colors'
 import { SPLASH_TAGLINE } from '../utils/strings'
 import { useNavigation } from '@react-navigation/native'
 import { moderateScale } from 'react-native-size-matters'

@@ -24,7 +24,6 @@ const AddNewCourses = () => {
 
     const addBanner = async () => {
         const result = await launchImageLibrary({ mediaType: 'photo',quality: 0.5 });
-
         console.log(result);
         if (!result.didCancel) {
             setBannerImage(result)

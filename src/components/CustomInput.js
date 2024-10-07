@@ -17,7 +17,7 @@ const CustomInput = ({keyboardType,onChangeText,placeholder, value,multiline}) =
                 style={{width: '100%',fontSize: moderateScale(14)}}
                 onChangeText={onChangeText}
                 keyboardType={keyboardType}
-                placeholder={placeholder? placeholder : ''}
+                placeholder={placeholder || ''}
                 value={value}
                 multiline={multiline}
             />

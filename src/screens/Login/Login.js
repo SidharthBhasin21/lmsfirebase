@@ -73,21 +73,21 @@ const Login = () => {
     //     }
     // }
 
-    const onGoogleButtonPress = async () => {
-        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-        // Get the users ID token
-        const { idToken } = await GoogleSignin.signIn();
+    // const onGoogleButtonPress = async () => {
+    //     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    //     // Get the users ID token
+    //     const { idToken } = await GoogleSignin.signIn();
 
-        // Create a Google credential with the token
-        const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-        const userInfo = await auth().signInWithCredential(googleCredential)
-        console.log(userInfo.user);
+    //     // Create a Google credential with the token
+    //     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    //     const userInfo = await auth().signInWithCredential(googleCredential)
+    //     console.log(userInfo.user);
         
-        storeDataAuth(userInfo.user)
-        // Sign-in the user with the credential
-        return userInfo;
+    //     storeDataAuth(userInfo.user)
+    //     // Sign-in the user with the credential
+    //     return userInfo;
 
-    }
+    // }
 
 
     useEffect(() => {
